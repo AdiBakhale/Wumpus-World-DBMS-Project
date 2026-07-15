@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Worlds | Wumpus World DBMS{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Worlds</h1>
+        <p class="text-secondary mb-0">Manage reusable Wumpus World map definitions.</p>
+    </div>
+    <a class="btn btn-primary" href="{{ url_for('worlds.create_world') }}">New World</a>
+</div>
+
+<div class="card">
+    <div class="card-header bg-white">
+        <input class="form-control table-filter" type="search" placeholder="Search worlds..." data-target="#worldsTable">
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0" id="worldsTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Grid</th>
+                    <th>Difficulty</th>
+                    <th>Creator</th>
+                    <th>Status</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for world in worlds %}
+                <tr>
+                    <td>{{ world.world_id }}</td>
+                    <td class="fw-semibold">{{ world.world_name }}</td>
+                    <td>{{ world.grid_rows }}x{{ world.grid_columns }}</td>
+                    <td><span class="badge difficulty-badge">{{ world.difficulty_level }}</span></td>
+                    <td>{{ world.creator.full_name }}</td>
+                    <td><span class="badge text-bg-{{ 'success' if world.is_active else 'secondary' }}">{{ "Active" if world.is_active else "Inactive" }}</span></td>
+                    <td class="text-end">
+                        <div class="d-inline-flex gap-2">
+                            <a class="btn btn-sm btn-outline-primary" href="{{ url_for('worlds.edit_world', world_id=world.world_id) }}">Edit</a>
+                            <form method="post" action="{{ url_for('worlds.delete_world', world_id=world.world_id) }}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" data-confirm="Delete this world?">Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="7" class="text-center text-secondary py-4">No worlds found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

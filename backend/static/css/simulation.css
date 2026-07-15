@@ -1,0 +1,195 @@
+/* ================================
+   WUMPUS WORLD SIMULATION
+================================ */
+
+.grid-container{
+
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    gap:10px;
+
+    margin-top:20px;
+
+}
+
+.grid-cell{
+
+    position:relative;
+
+    aspect-ratio:1;
+
+    background:#f8f9fa;
+
+    border:2px solid #dee2e6;
+
+    border-radius:12px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:34px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.grid-cell:hover{
+
+    transform:scale(1.04);
+
+    box-shadow:0 5px 18px rgba(0,0,0,.15);
+
+}
+
+.grid-cell.visited{
+
+    background:#d1ecf1;
+
+}
+
+.grid-cell.agent{
+
+    background:#d4edda;
+
+    border:3px solid #28a745;
+
+}
+
+.grid-cell.wumpus{
+
+    background:#ffe5e5;
+
+}
+
+.grid-cell.pit{
+
+    background:#343a40;
+
+    color:white;
+
+}
+
+.grid-cell.gold{
+
+    background:#fff3cd;
+
+}
+
+.grid-cell.exit{
+
+    background:#e2f7e2;
+
+}
+
+.cell-content{
+
+    font-size:34px;
+
+}
+
+.grid-cell .perception{
+
+    position:absolute;
+
+    bottom:4px;
+
+    right:5px;
+
+    font-size:14px;
+
+}
+
+.control-btn{
+
+    width:100%;
+
+}
+
+#current-score{
+
+    font-weight:bold;
+
+    color:#198754;
+
+}
+
+#game-status{
+
+    font-size:15px;
+
+}
+
+.legend{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:12px;
+
+    margin-top:20px;
+
+}
+
+.legend-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:5px;
+
+    font-size:15px;
+
+}
+
+.legend-icon{
+
+    font-size:22px;
+
+}
+
+@keyframes moveAgent{
+
+    0%{
+
+        transform:scale(.5);
+
+        opacity:.3;
+
+    }
+
+    100%{
+
+        transform:scale(1);
+
+        opacity:1;
+
+    }
+
+}
+
+.agent-animation{
+
+    animation:moveAgent .4s ease;
+
+}
+
+.score-positive{
+
+    color:#28a745;
+
+}
+
+.score-negative{
+
+    color:#dc3545;
+
+}

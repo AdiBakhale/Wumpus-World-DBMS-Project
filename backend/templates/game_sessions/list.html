@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Game Sessions | Wumpus World DBMS{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Game Sessions</h1>
+        <p class="text-secondary mb-0">Manage playthrough summaries and outcomes.</p>
+    </div>
+    <a class="btn btn-primary" href="{{ url_for('game_sessions.create_game_session') }}">New Session</a>
+</div>
+
+<div class="card">
+    <div class="card-header bg-white">
+        <input class="form-control table-filter" type="search" placeholder="Search sessions..." data-target="#sessionsTable">
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0" id="sessionsTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>World</th>
+                    <th>Agent</th>
+                    <th>Player</th>
+                    <th>Status</th>
+                    <th>Result</th>
+                    <th class="text-end">Score</th>
+                    <th class="text-end">Steps</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for session in sessions %}
+                <tr>
+                    <td>{{ session.session_id }}</td>
+                    <td>{{ session.world.world_name }}</td>
+                    <td>{{ session.agent.agent_name }}</td>
+                    <td>{{ session.player.full_name }}</td>
+                    <td><span class="badge text-bg-{{ 'success' if session.status == 'Completed' else 'warning' if session.status == 'Running' else 'secondary' }}">{{ session.status }}</span></td>
+                    <td><span class="badge result-badge">{{ session.result }}</span></td>
+                    <td class="text-end">{{ session.final_score }}</td>
+                    <td class="text-end">{{ session.total_steps }}</td>
+                    <td class="text-end">
+                        <div class="d-inline-flex gap-2">
+                            <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('game_sessions.game_history', session_id=session.session_id) }}">History</a>
+                            <a class="btn btn-sm btn-outline-primary" href="{{ url_for('game_sessions.edit_game_session', session_id=session.session_id) }}">Edit</a>
+                            <form method="post" action="{{ url_for('game_sessions.delete_game_session', session_id=session.session_id) }}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" data-confirm="Delete this session?">Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="9" class="text-center text-secondary py-4">No game sessions found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

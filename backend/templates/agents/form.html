@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}{{ "Edit Agent" if mode == "edit" else "New Agent" }} | Wumpus World DBMS{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h1 class="h3 mb-1">{{ "Edit Agent" if mode == "edit" else "New Agent" }}</h1>
+    <p class="text-secondary mb-0">Configure a human, random, rule-based, or logic-based agent.</p>
+</div>
+
+<div class="card form-card">
+    <div class="card-body">
+        <form method="post" class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Agent Name</label>
+                <input class="form-control" name="agent_name" required maxlength="100" value="{{ agent.agent_name if agent else '' }}">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Creator</label>
+                <select class="form-select" name="created_by" required>
+                    <option value="">Select creator</option>
+                    {% for user in users %}
+                    <option value="{{ user.user_id }}" {% if agent and agent.created_by == user.user_id %}selected{% endif %}>{{ user.full_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Agent Type</label>
+                <select class="form-select" name="agent_type" required>
+                    {% for agent_type in agent_types %}
+                    <option value="{{ agent_type }}" {% if agent and agent.agent_type == agent_type %}selected{% endif %}>{{ agent_type }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-12">
+                <label class="form-label">Strategy Description</label>
+                <textarea class="form-control" name="strategy_description" rows="4">{{ agent.strategy_description if agent and agent.strategy_description else '' }}</textarea>
+            </div>
+            <div class="col-12">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" id="is_active" name="is_active" type="checkbox" {% if not agent or agent.is_active %}checked{% endif %}>
+                    <label class="form-check-label" for="is_active">Active</label>
+                </div>
+            </div>
+            <div class="col-12 d-flex gap-2">
+                <button class="btn btn-primary" type="submit">{{ "Update Agent" if mode == "edit" else "Create Agent" }}</button>
+                <a class="btn btn-outline-secondary" href="{{ url_for('agents.list_agents') }}">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

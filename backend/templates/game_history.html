@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Game History | Wumpus World DBMS{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Game History</h1>
+        <p class="text-secondary mb-0">Explore step-by-step actions, locations, scores, and perceptions.</p>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form class="row g-3 align-items-end" method="get">
+            <div class="col-md-8">
+                <label class="form-label">Filter by Session</label>
+                <select class="form-select" name="session_id">
+                    <option value="">All sessions</option>
+                    {% for session in sessions %}
+                    <option value="{{ session.session_id }}" {% if selected_session_id == session.session_id %}selected{% endif %}>
+                        #{{ session.session_id }} - {{ session.world.world_name }} / {{ session.agent.agent_name }} / {{ session.result }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4 d-flex gap-2">
+                <button class="btn btn-primary" type="submit">Apply Filter</button>
+                <a class="btn btn-outline-secondary" href="{{ url_for('game_sessions.game_history') }}">Reset</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-white">
+        <input class="form-control table-filter" type="search" placeholder="Search history..." data-target="#historyTable">
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0" id="historyTable">
+            <thead>
+                <tr>
+                    <th>Session</th>
+                    <th>Step</th>
+                    <th>World</th>
+                    <th>Agent</th>
+                    <th>Cell</th>
+                    <th>Action</th>
+                    <th>Direction</th>
+                    <th>Perceptions</th>
+                    <th class="text-end">Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for step in steps %}
+                <tr>
+                    <td>#{{ step.session_id }}</td>
+                    <td>{{ step.step_number }}</td>
+                    <td>{{ step.session.world.world_name }}</td>
+                    <td>{{ step.session.agent.agent_name }}</td>
+                    <td>({{ step.cell.row_number }}, {{ step.cell.column_number }})</td>
+                    <td>{{ step.action_type.action_name }}</td>
+                    <td>{{ step.direction_facing }}</td>
+                    <td>
+                        {% for item in step.perceptions %}
+                            <span class="badge text-bg-info-subtle text-info-emphasis border border-info-subtle">{{ item.perception_type.perception_name }}</span>
+                        {% else %}
+                            <span class="text-secondary">None</span>
+                        {% endfor %}
+                    </td>
+                    <td class="text-end">{{ step.score_after_step }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="9" class="text-center text-secondary py-4">No history records found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

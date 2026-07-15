@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}{{ "Edit User" if mode == "edit" else "New User" }} | Wumpus World DBMS{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h1 class="h3 mb-1">{{ "Edit User" if mode == "edit" else "New User" }}</h1>
+    <p class="text-secondary mb-0">{{ "Update user details." if mode == "edit" else "Add a new system user." }}</p>
+</div>
+
+<div class="card form-card">
+    <div class="card-body">
+        <form method="post" class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Full Name</label>
+                <input class="form-control" name="full_name" required maxlength="100" value="{{ user.full_name if user else '' }}">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Email</label>
+                <input class="form-control" name="email" type="email" required maxlength="255" value="{{ user.email if user else '' }}">
+            </div>
+            <div class="col-12">
+                <label class="form-label">Password Hash</label>
+                <input class="form-control" name="password_hash" maxlength="255" {% if mode == "create" %}required{% endif %} placeholder="{{ 'Leave blank to keep existing value' if mode == 'edit' else 'Enter a sample password hash' }}">
+            </div>
+            <div class="col-12">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" id="is_active" name="is_active" type="checkbox" {% if not user or user.is_active %}checked{% endif %}>
+                    <label class="form-check-label" for="is_active">Active</label>
+                </div>
+            </div>
+            <div class="col-12 d-flex gap-2">
+                <button class="btn btn-primary" type="submit">{{ "Update User" if mode == "edit" else "Create User" }}</button>
+                <a class="btn btn-outline-secondary" href="{{ url_for('users.list_users') }}">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | Wumpus World DBMS{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Dashboard</h1>
+        <p class="text-secondary mb-0">Live operational view from the PostgreSQL database.</p>
+    </div>
+    <span class="badge rounded-pill text-bg-{{ 'success' if db_ok else 'danger' }} px-3 py-2">
+        {{ "Database Connected" if db_ok else "Database Offline" }}
+    </span>
+</div>
+
+{% if db_ok %}
+<div class="row g-3 mb-4">
+    <div class="col-6 col-xl"><div class="card stat-card"><div class="card-body"><div class="stat-value">{{ stats.users }}</div><div class="text-secondary">Users</div></div></div></div>
+    <div class="col-6 col-xl"><div class="card stat-card"><div class="card-body"><div class="stat-value">{{ stats.worlds }}</div><div class="text-secondary">Worlds</div></div></div></div>
+    <div class="col-6 col-xl"><div class="card stat-card"><div class="card-body"><div class="stat-value">{{ stats.agents }}</div><div class="text-secondary">Agents</div></div></div></div>
+    <div class="col-6 col-xl"><div class="card stat-card"><div class="card-body"><div class="stat-value">{{ stats.sessions }}</div><div class="text-secondary">Sessions</div></div></div></div>
+    <div class="col-6 col-xl"><div class="card stat-card"><div class="card-body"><div class="stat-value">{{ stats.wins }}</div><div class="text-secondary">Wins</div></div></div></div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h2 class="h5 mb-0">Recent Sessions</h2>
+                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('game_sessions.list_game_sessions') }}">View All</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Player</th>
+                            <th>World</th>
+                            <th>Agent</th>
+                            <th>Result</th>
+                            <th class="text-end">Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for session in recent_sessions %}
+                        <tr>
+                            <td>{{ session.session_id }}</td>
+                            <td>{{ session.player.full_name }}</td>
+                            <td>{{ session.world.world_name }}</td>
+                            <td>{{ session.agent.agent_name }}</td>
+                            <td><span class="badge result-badge">{{ session.result }}</span></td>
+                            <td class="text-end">{{ session.final_score }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="6" class="text-center text-secondary py-4">No game sessions found.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header bg-white">
+                <h2 class="h5 mb-0">Quick Actions</h2>
+            </div>
+            <div class="card-body d-grid gap-2">
+                <a class="btn btn-primary" href="{{ url_for('users.create_user') }}">Add User</a>
+                <a class="btn btn-outline-primary" href="{{ url_for('worlds.create_world') }}">Create World</a>
+                <a class="btn btn-outline-primary" href="{{ url_for('agents.create_agent') }}">Create Agent</a>
+                <a class="btn btn-outline-primary" href="{{ url_for('game_sessions.create_game_session') }}">Start Session</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

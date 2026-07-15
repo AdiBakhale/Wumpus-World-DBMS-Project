@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}{{ "Edit World" if mode == "edit" else "New World" }} | Wumpus World DBMS{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h1 class="h3 mb-1">{{ "Edit World" if mode == "edit" else "New World" }}</h1>
+    <p class="text-secondary mb-0">Define grid metadata and difficulty.</p>
+</div>
+
+<div class="card form-card">
+    <div class="card-body">
+        <form method="post" class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">World Name</label>
+                <input class="form-control" name="world_name" required maxlength="100" value="{{ world.world_name if world else '' }}">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Creator</label>
+                <select class="form-select" name="created_by" required>
+                    <option value="">Select creator</option>
+                    {% for user in users %}
+                    <option value="{{ user.user_id }}" {% if world and world.created_by == user.user_id %}selected{% endif %}>{{ user.full_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Difficulty</label>
+                <select class="form-select" name="difficulty_level" required>
+                    {% for difficulty in difficulties %}
+                    <option value="{{ difficulty }}" {% if world and world.difficulty_level == difficulty %}selected{% endif %}>{{ difficulty }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Rows</label>
+                <input class="form-control" name="grid_rows" type="number" min="2" max="50" required value="{{ world.grid_rows if world else 4 }}">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Columns</label>
+                <input class="form-control" name="grid_columns" type="number" min="2" max="50" required value="{{ world.grid_columns if world else 4 }}">
+            </div>
+            <div class="col-12">
+                <label class="form-label">Description</label>
+                <textarea class="form-control" name="description" rows="4">{{ world.description if world and world.description else '' }}</textarea>
+            </div>
+            <div class="col-12">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" id="is_active" name="is_active" type="checkbox" {% if not world or world.is_active %}checked{% endif %}>
+                    <label class="form-check-label" for="is_active">Active</label>
+                </div>
+            </div>
+            <div class="col-12 d-flex gap-2">
+                <button class="btn btn-primary" type="submit">{{ "Update World" if mode == "edit" else "Create World" }}</button>
+                <a class="btn btn-outline-secondary" href="{{ url_for('worlds.list_worlds') }}">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

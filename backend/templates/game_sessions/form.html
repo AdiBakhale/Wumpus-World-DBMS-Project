@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}{{ "Edit Session" if mode == "edit" else "New Session" }} | Wumpus World DBMS{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h1 class="h3 mb-1">{{ "Edit Session" if mode == "edit" else "New Session" }}</h1>
+    <p class="text-secondary mb-0">Record a Wumpus World simulation result.</p>
+</div>
+
+<div class="card form-card">
+    <div class="card-body">
+        <form method="post" class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">World</label>
+                <select class="form-select" name="world_id" required>
+                    <option value="">Select world</option>
+                    {% for world in worlds %}
+                    <option value="{{ world.world_id }}" {% if session and session.world_id == world.world_id %}selected{% endif %}>{{ world.world_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Agent</label>
+                <select class="form-select" name="agent_id" required>
+                    <option value="">Select agent</option>
+                    {% for agent in agents %}
+                    <option value="{{ agent.agent_id }}" {% if session and session.agent_id == agent.agent_id %}selected{% endif %}>{{ agent.agent_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Player</label>
+                <select class="form-select" name="played_by" required>
+                    <option value="">Select player</option>
+                    {% for user in users %}
+                    <option value="{{ user.user_id }}" {% if session and session.played_by == user.user_id %}selected{% endif %}>{{ user.full_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% if mode == "edit" %}
+            <div class="col-md-6">
+                <label class="form-label">Status</label>
+                <select class="form-select" name="status" required>
+                    {% for status in statuses %}
+                    <option value="{{ status }}" {% if session and session.status == status %}selected{% endif %}>{{ status }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Result</label>
+                <select class="form-select" name="result" required>
+                    {% for result in results %}
+                    <option value="{{ result }}" {% if session and session.result == result %}selected{% endif %}>{{ result }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Final Score</label>
+                <input class="form-control" name="final_score" type="number" required value="{{ session.final_score if session else 0 }}">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Total Steps</label>
+                <input class="form-control" name="total_steps" type="number" min="0" required value="{{ session.total_steps if session else 0 }}">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">End Time</label>
+                <input class="form-control" name="end_time" type="datetime-local" value="{{ session.end_time.strftime('%Y-%m-%dT%H:%M') if session and session.end_time else '' }}">
+            </div>
+            <div class="col-md-6">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" id="gold_collected" name="gold_collected" type="checkbox" {% if session and session.gold_collected %}checked{% endif %}>
+                    <label class="form-check-label" for="gold_collected">Gold collected</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" id="agent_survived" name="agent_survived" type="checkbox" {% if not session or session.agent_survived %}checked{% endif %}>
+                    <label class="form-check-label" for="agent_survived">Agent survived</label>
+                </div>
+            </div>
+            {% else %}
+            <!-- For new sessions, these values will be randomized in the backend -->
+            <input type="hidden" name="status" value="Running">
+            <input type="hidden" name="result" value="Incomplete">
+            {% endif %}
+            <div class="col-12 d-flex gap-2">
+                <button class="btn btn-primary" type="submit">{{ "Update Session" if mode == "edit" else "Create Session" }}</button>
+                <a class="btn btn-outline-secondary" href="{{ url_for('game_sessions.list_game_sessions') }}">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const statusSelect = document.querySelector('select[name="status"]');
+    const endTimeInput = document.querySelector('input[name="end_time"]');
+    
+    function updateEndTimeRequired() {
+        if (statusSelect && endTimeInput) {
+            if (statusSelect.value === 'Running') {
+                endTimeInput.required = false;
+            } else {
+                endTimeInput.required = true;
+            }
+        }
+    }
+    
+    if (statusSelect && endTimeInput) {
+        statusSelect.addEventListener("change", updateEndTimeRequired);
+        updateEndTimeRequired();
+    }
+});
+</script>
+{% endblock %}
+{% endblock %}
